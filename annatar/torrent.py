@@ -6,8 +6,6 @@ import PTN
 import structlog
 from pydantic import BaseModel, field_validator
 
-from annatar import config
-
 log = structlog.get_logger(__name__)
 
 # Space required for values
@@ -17,7 +15,6 @@ log = structlog.get_logger(__name__)
 # 4 bits: 16 values  (0 to 15)
 # I'm not using any more than this. 8 is far too wide a decision tree
 
-NAME_MATCH_BIT_POS = 24
 SEASON_MATCH_BIT_POS = 20
 RESOLUTION_BIT_POS = 14
 AUDIO_BIT_POS = 8
@@ -197,10 +194,7 @@ class TorrentMeta(BaseModel):
         return -1
 
     def matches_name(self, title: str) -> bool:
-        return (
-            Levenshtein.ratio(self.title.lower(), title.lower())
-            >= config.TORRENT_TITLE_MATCH_THRESHOLD
-        )
+        return Levenshtein.ratio(self.title.lower(), title.lower()) > 0.9
 
     @property
     def score(self):
